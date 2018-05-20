@@ -62,35 +62,15 @@ func encrypt() {
 	var fileDestination = ""
 
 	// Get Private Key
-	if *privateKeyPath == "" {
-		fmt.Println("Please enter key string: ")
-		keyString, _ = reader.ReadString('\n')
-	} else {
-		keyStringFromFlag, _ := ioutil.ReadFile(*privateKeyPath)
-		keyString = string(keyStringFromFlag)
-	}
-	keyString = strings.Trim(keyString, "\n")
+	keyString = readVariableFromConsoleOrFlag(privateKeyPath)
 	fmt.Println("Key String is : " + keyString)
 
 	// Get Plain Text
-	if *plainTextReadPath == "" {
-		fmt.Println("Please enter to-be encrypted string: ")
-		plainString, _ = reader.ReadString('\n')
-	} else {
-		plainStringFromFlag, _ := ioutil.ReadFile(*plainTextReadPath)
-		plainString = string(plainStringFromFlag)
-	}
-	plainString = strings.Trim(plainString, "\n")
+	plainString = readVariableFromConsoleOrFlag(plainTextReadPath)
 	fmt.Println("Plain String is : " + plainString)
 
 	// Get CypherText output path
-	if *cypherTextWritePath == "" {
-		fmt.Println("Please enter where to save the encrypted string (e.g. /Users/fox/xxx.txt) : ")
-		fileDestination, _ = reader.ReadString('\n')
-	} else {
-		fileDestination = *cypherTextWritePath
-	}
-	fileDestination = strings.TrimSpace(fileDestination)
+	fileDestination = readPathFromConsoleOrFlag(cypherTextReadPath)
 	fmt.Println("File destination is : " + fileDestination)
 
 	fmt.Println("\n===Generating derived key===")
@@ -117,26 +97,14 @@ func encrypt() {
 
 func decrypt() {
 	var fileLocation = ""
+	var keyString = ""
+
 	// Get CyperText input path
-	if *cypherTextReadPath == "" {
-		fmt.Println("Please enter where to find the ciphertext (e.g. /Users/fox/xxx.txt) : ")
-		fileLocation, _ = reader.ReadString('\n')
-	} else {
-		fileLocation = *cypherTextReadPath
-	}
-	fileLocation = strings.TrimSpace(fileLocation)
+	fileLocation = readPathFromConsoleOrFlag(cypherTextReadPath)
 	fmt.Println("file location is : " + fileLocation)
 
 	// Get Private Key
-	var keyString = ""
-	if *privateKeyPath == "" {
-		fmt.Println("Please enter key string: ")
-		keyString, _ = reader.ReadString('\n')
-	} else {
-		keyStringFromFile, _ := ioutil.ReadFile(*privateKeyPath)
-		keyString = string(keyStringFromFile)
-	}
-	keyString = strings.Trim(keyString, "\n")
+	keyString = readVariableFromConsoleOrFlag(privateKeyPath)
 	fmt.Println("key string is : " + keyString)
 
 	fmt.Println("\n===Generating derived key===")
@@ -152,6 +120,31 @@ func decrypt() {
 	fmt.Println("=========RESULT===========")
 	fmt.Println("==========================")
 	fmt.Println(plainString)
+}
+
+func readPathFromConsoleOrFlag(pathFromFlag *string) string {
+	var returnPath = ""
+	if *pathFromFlag == "" {
+		fmt.Println("Please enter where to save the encrypted string (e.g. /Users/fox/xxx.txt) : ")
+		returnPath, _ = reader.ReadString('\n')
+	} else {
+		returnPath = *pathFromFlag
+	}
+	returnPath = strings.Trim(returnPath, "\n")
+	return returnPath
+}
+
+func readVariableFromConsoleOrFlag(varFromFlag *string) string {
+	var returnVariable = ""
+	if *varFromFlag == "" {
+		fmt.Println("Please enter key string: ")
+		returnVariable, _ = reader.ReadString('\n')
+	} else {
+		dataFromFile, _ := ioutil.ReadFile(*varFromFlag)
+		returnVariable = string(dataFromFile)
+	}
+	returnVariable = strings.Trim(returnVariable, "\n")
+	return returnVariable
 }
 
 func isAvailableForWrite(filePath string) bool {
