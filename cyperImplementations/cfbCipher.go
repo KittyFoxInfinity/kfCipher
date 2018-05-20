@@ -1,14 +1,13 @@
 package kfCipher
 
 import (
-	"fmt"
 	"crypto/aes"
 	"crypto/cipher"
-	"encoding/hex"
 	"crypto/rand"
+	"encoding/hex"
+	"fmt"
 	"io"
 )
-
 
 func CFBEncrypter(key []byte, plainString string) string {
 	//if len(key) != 16 || len(key) != 24 || len(key) !=32 {
@@ -77,7 +76,6 @@ func ConvertPassPhrase(passPhrase string) []byte {
 
 	fmt.Println("key in byte: ", key)
 	fmt.Println("derived key in byte: ", dk)
-
 
 	return dk[:]
 }

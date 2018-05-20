@@ -2,48 +2,96 @@ package main
 
 import (
 	"bufio"
-	"os"
 	"fmt"
-	"path/filepath"
 	"io/ioutil"
-	"strings"
-	path2 "path"
 	"kfCipher/cyperImplementations"
+	"os"
+	path2 "path"
+	"path/filepath"
+	"strings"
+	"flag"
 )
 
 var reader = bufio.NewReader(os.Stdin)
 
+// command line arguments
+// mode
+var mode = flag.String("mode", "", "Mode of program. either encrypt or decrypt.")
+
+// private key
+var privateKeyPath = flag.String("privateKeyPath", "", "Path to a private key.")
+
+// cypherText path
+var cypherTextWritePath = flag.String("cypherTextWritePath", "", "Path to the write encrypted cyper text to file.")
+var cypherTextReadPath = flag.String("cypherTextReadPath", "", "Path to read encrypted cyper text from file.")
+
+// plaintext path
+var plainTextWritePath = flag.String("plainTextWritePath", "", "Path to write plain text when decrypting.")
+var plainTextReadPath = flag.String("plainTextReadPath", "", "Path to read plain text when encrypting.")
+
 func main() {
+	flag.Parse()
+	fmt.Println("mode :" + *mode)
+	fmt.Println("privateKeyPath :" + *privateKeyPath)
+	fmt.Println("plainTextReadPath :" + *plainTextReadPath)
+	fmt.Println("cypherTextWritePath :"  + *cypherTextWritePath)
+	fmt.Println("cypherTextReadPath :" + *cypherTextReadPath)
+
 
 	fmt.Println("Please enter 1: for encryption; 2: for decryption:")
-	option, _ := reader.ReadString('\n')
-	option = strings.TrimSpace(option)
-	if option == "1" {
-		fmt.Println("1: encryption\n")
-		encrypt()
-	} else if option == "2" {
-		fmt.Println("2: decryption\n")
-		decrypt()
+	var option = ""
+	if *mode == "" {
+		option, _ = reader.ReadString('\n')
+		option = strings.TrimSpace(option)
 	}
 
+	if (option == "1") || (*mode == "encrypt") {
+		fmt.Println("1: encryption\n")
+		encrypt()
+	} else if (option == "2") || (*mode == "decrypt") {
+		fmt.Println("2: decryption\n")
+		decrypt()
+	} else {
+		fmt.Println("Unrecognized Mode. Exiting.")
+	}
 }
 
 func encrypt() {
-	fmt.Println("Please enter key string: ")
-	keyString, _ := reader.ReadString('\n')
+	var keyString = ""
+	var plainString = ""
+	var fileDestination = ""
+
+	// Get Private Key
+	if *privateKeyPath == "" {
+		fmt.Println("Please enter key string: ")
+		keyString, _ = reader.ReadString('\n')
+	} else {
+		keyStringFromFlag, _ := ioutil.ReadFile(*privateKeyPath)
+		keyString = string(keyStringFromFlag)
+	}
 	keyString = strings.Trim(keyString, "\n")
-	fmt.Println(keyString)
+	fmt.Println("Key String is : " + keyString)
 
-	fmt.Println("Please enter to-be encrypted string: ")
-	plainString, _ := reader.ReadString('\n')
+	// Get Plain Text
+	if *plainTextReadPath == "" {
+		fmt.Println("Please enter to-be encrypted string: ")
+		plainString, _ = reader.ReadString('\n')
+	} else {
+		plainStringFromFlag, _ := ioutil.ReadFile(*plainTextReadPath)
+		plainString = string(plainStringFromFlag)
+	}
 	plainString = strings.Trim(plainString, "\n")
-	fmt.Println(plainString)
+	fmt.Println("Plain String is : " + plainString)
 
-	fmt.Println("Please enter where to save the encrypted string (e.g. /Users/fox/xxx.txt) : ")
-	fileDestination, _ := reader.ReadString('\n')
+	// Get CypherText output path
+	if *cypherTextWritePath == "" {
+		fmt.Println("Please enter where to save the encrypted string (e.g. /Users/fox/xxx.txt) : ")
+		fileDestination, _ = reader.ReadString('\n')
+	} else {
+		fileDestination = *cypherTextWritePath
+	}
 	fileDestination = strings.TrimSpace(fileDestination)
-	fmt.Println(fileDestination)
-
+	fmt.Println("File destination is : " + fileDestination)
 
 	fmt.Println("\n===Generating derived key===")
 	key := kfCipher.ConvertPassPhrase(keyString)
@@ -68,15 +116,28 @@ func encrypt() {
 }
 
 func decrypt() {
-	fmt.Println("Please enter where to find the ciphertext (e.g. /Users/fox/xxx.txt) : ")
-	fileLocation, _ := reader.ReadString('\n')
+	var fileLocation = ""
+	// Get CyperText input path
+	if *cypherTextReadPath == "" {
+		fmt.Println("Please enter where to find the ciphertext (e.g. /Users/fox/xxx.txt) : ")
+		fileLocation, _ = reader.ReadString('\n')
+	} else {
+		fileLocation = *cypherTextReadPath
+	}
 	fileLocation = strings.TrimSpace(fileLocation)
-	fmt.Println(fileLocation)
+	fmt.Println("file location is : " + fileLocation)
 
-	fmt.Println("Please enter key string: ")
-	keyString, _ := reader.ReadString('\n')
+	// Get Private Key
+	var keyString = ""
+	if *privateKeyPath == "" {
+		fmt.Println("Please enter key string: ")
+		keyString, _ = reader.ReadString('\n')
+	} else {
+		keyStringFromFile, _ := ioutil.ReadFile(*privateKeyPath)
+		keyString = string(keyStringFromFile)
+	}
 	keyString = strings.Trim(keyString, "\n")
-	fmt.Println(keyString)
+	fmt.Println("key string is : " + keyString)
 
 	fmt.Println("\n===Generating derived key===")
 	key := kfCipher.ConvertPassPhrase(keyString)
