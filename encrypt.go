@@ -21,13 +21,12 @@ var mode = flag.String("mode", "", "Mode of program. either encrypt or decrypt."
 // private key
 var privateKeyPath = flag.String("privateKeyPath", "", "Path to a private key.")
 
-// cypherText path
-var cypherTextWritePath = flag.String("cypherTextWritePath", "", "Path to the write encrypted cyper text to file.")
-var cypherTextReadPath = flag.String("cypherTextReadPath", "", "Path to read encrypted cyper text from file.")
-
-// plaintext path
-var plainTextWritePath = flag.String("plainTextWritePath", "", "Path to write plain text when decrypting.")
+// encrypt mode
 var plainTextReadPath = flag.String("plainTextReadPath", "", "Path to read plain text when encrypting.")
+var cypherTextWritePath = flag.String("cypherTextWritePath", "", "Path to the write encrypted cyper text to file.")
+
+// decrypt mode
+var cypherTextReadPath = flag.String("cypherTextReadPath", "", "Path to read encrypted cyper text from file.")
 
 func main() {
 	flag.Parse()
@@ -38,7 +37,7 @@ func main() {
 	fmt.Println("cypherTextReadPath :" + *cypherTextReadPath)
 
 
-	fmt.Println("Please enter 1: for encryption; 2: for decryption:")
+	fmt.Println("Please enter 1: for encryption; 2: for decryption:; other for help.")
 	var option = ""
 	if *mode == "" {
 		option, _ = reader.ReadString('\n')
@@ -52,7 +51,10 @@ func main() {
 		fmt.Println("2: decryption\n")
 		decrypt()
 	} else {
-		fmt.Println("Unrecognized Mode. Exiting.")
+		fmt.Println("Run this with command line arguments. All arguments are optional.")
+        fmt.Println("./encrypt --mode=encrypt --privateKeyPath=<PathToPrivateKey> --plainTextReadPath=<PathToPlainText> --cypherTextWritePath=<OutputPathToCypherText>")
+        fmt.Println("./encrypt --mode=decrypt --privateKeyPath=<PathToPrivateKey> --cypherTextReadPath=<PathToCypherText>")
+		fmt.Println("Exiting.")
 	}
 }
 
@@ -70,7 +72,7 @@ func encrypt() {
 	fmt.Println("Plain String is : " + plainString)
 
 	// Get CypherText output path
-	fileDestination = readPathFromConsoleOrFlag(cypherTextReadPath, "CypherTextPath")
+	fileDestination = readPathFromConsoleOrFlag(cypherTextWritePath, "CypherTextPath")
 	fmt.Println("File destination is : " + fileDestination)
 
 	fmt.Println("\n===Generating derived key===")
