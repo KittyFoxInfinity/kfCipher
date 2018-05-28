@@ -62,15 +62,15 @@ func encrypt() {
 	var fileDestination = ""
 
 	// Get Private Key
-	keyString = readVariableFromConsoleOrFlag(privateKeyPath)
+	keyString = readVariableFromConsoleOrFlag(privateKeyPath, "Key")
 	fmt.Println("Key String is : " + keyString)
 
 	// Get Plain Text
-	plainString = readVariableFromConsoleOrFlag(plainTextReadPath)
+	plainString = readVariableFromConsoleOrFlag(plainTextReadPath, "PlainText")
 	fmt.Println("Plain String is : " + plainString)
 
 	// Get CypherText output path
-	fileDestination = readPathFromConsoleOrFlag(cypherTextReadPath)
+	fileDestination = readPathFromConsoleOrFlag(cypherTextReadPath, "CypherTextPath")
 	fmt.Println("File destination is : " + fileDestination)
 
 	fmt.Println("\n===Generating derived key===")
@@ -100,11 +100,11 @@ func decrypt() {
 	var keyString = ""
 
 	// Get CyperText input path
-	fileLocation = readPathFromConsoleOrFlag(cypherTextReadPath)
+	fileLocation = readPathFromConsoleOrFlag(cypherTextReadPath, "CypherTextPath")
 	fmt.Println("file location is : " + fileLocation)
 
 	// Get Private Key
-	keyString = readVariableFromConsoleOrFlag(privateKeyPath)
+	keyString = readVariableFromConsoleOrFlag(privateKeyPath, "Key")
 	fmt.Println("key string is : " + keyString)
 
 	fmt.Println("\n===Generating derived key===")
@@ -122,10 +122,10 @@ func decrypt() {
 	fmt.Println(plainString)
 }
 
-func readPathFromConsoleOrFlag(pathFromFlag *string) string {
+func readPathFromConsoleOrFlag(pathFromFlag *string, pathName string) string {
 	var returnPath = ""
 	if *pathFromFlag == "" {
-		fmt.Println("Please enter where to save the encrypted string (e.g. /Users/fox/xxx.txt) : ")
+		fmt.Println("Please enter path for: ", pathName)
 		returnPath, _ = reader.ReadString('\n')
 	} else {
 		returnPath = *pathFromFlag
@@ -134,10 +134,10 @@ func readPathFromConsoleOrFlag(pathFromFlag *string) string {
 	return returnPath
 }
 
-func readVariableFromConsoleOrFlag(varFromFlag *string) string {
+func readVariableFromConsoleOrFlag(varFromFlag *string, varName string) string {
 	var returnVariable = ""
 	if *varFromFlag == "" {
-		fmt.Println("Please enter key string: ")
+		fmt.Println("Please enter string for: ", varName)
 		returnVariable, _ = reader.ReadString('\n')
 	} else {
 		dataFromFile, _ := ioutil.ReadFile(*varFromFlag)
